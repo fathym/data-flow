@@ -88,7 +88,10 @@ export default class DataFlowContainer extends React.Component<
 
         <ModuleCommands />
 
-        <DataFlowCanvas zoomLevel={this.state.zoomLevel} />
+        <DataFlowCanvas
+          zoomLevel={this.state.zoomLevel}
+          onZoomChange={(zl) => this.handleZoomChange(zl)}
+        />
       </div>
     );
   }
@@ -106,8 +109,8 @@ export default class DataFlowContainer extends React.Component<
 
     if (nextZoom < 0.01) {
       nextZoom = 0.01;
-    } else if (nextZoom > 1) {
-      nextZoom = 1;
+    } else if (nextZoom > 4) {
+      nextZoom = 4;
     }
 
     this.setState({

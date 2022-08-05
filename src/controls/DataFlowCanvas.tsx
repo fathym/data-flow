@@ -3,7 +3,6 @@ import React from 'react';
 import { css } from '@emotion/react';
 import Card from '@mui/material/Card';
 import { BrowserJsPlumbInstance, newInstance } from '@jsplumb/browser-ui';
-import { AnchorSpec } from '@jsplumb/common';
 import Panzoom, { PanzoomObject } from '@panzoom/panzoom';
 
 const canvasCss = css`
@@ -34,6 +33,8 @@ const ref2Css = css`
 `;
 
 class DataFlowCanvasProperties {
+  public onZoomChange?: (zoomLevel: number) => void;
+
   public zoomLevel: number;
 
   constructor() {
@@ -70,19 +71,11 @@ export default class DataFlowCanvas extends React.Component<DataFlowCanvasProper
 
   //#region Life Cycle
   public componentDidMount() {
-    if (!this.jsPlumbCanvas) {
-      this.jsPlumbCanvas = newInstance({
-        container: this.canvasRef.current as Element,
-      });
-    }
+    this.configureJsPlumbCanvas();
 
-    if (!this.panZoomCanvas) {
-      this.panZoomCanvas = Panzoom(this.canvasRef.current as HTMLElement, {
-        exclude: [this.ref1.current, this.ref2.current]
-      });
-    }
+    // this.configurePanzoom();
 
-    this.setZoomLevel();
+    // this.setZoomLevel();
 
     const ep1 = this.jsPlumbCanvas.addEndpoint(this.ref1.current as Element, {
       endpoint: 'Dot',
@@ -94,18 +87,18 @@ export default class DataFlowCanvas extends React.Component<DataFlowCanvasProper
       anchor: 'AutoDefault',
     });
 
-    this.jsPlumbCanvas.connect({
-      source: ep1,
-      target: ep2,
-      connector: 'Straight',
-      // connector: {
-      //   type: 'Bezier',
-      //   options: {},
-      //   // overlays: [
-      //   //   { type: 'Label', options: { label: 'Connection 1', location: 0.5 } },
-      //   // ],
-      // },
-    });
+    // this.jsPlumbCanvas.connect({
+    //   source: ep1,
+    //   target: ep2,
+    //   connector: 'Straight',
+    //   // connector: {
+    //   //   type: 'Bezier',
+    //   //   options: {},
+    //   //   // overlays: [
+    //   //   //   { type: 'Label', options: { label: 'Connection 1', location: 0.5 } },
+    //   //   // ],
+    //   // },
+    // });
   }
 
   public componentDidUpdate() {
@@ -114,14 +107,16 @@ export default class DataFlowCanvas extends React.Component<DataFlowCanvasProper
 
   public render() {
     return (
-      <div css={canvasCss} ref={this.canvasRef}>
-        <Card css={ref1Css} ref={this.ref1}>
-          Hello
-        </Card>
+      <div css={canvasCss}>
+        <div ref={this.canvasRef}>
+          <Card css={ref1Css} ref={this.ref1}>
+            Hello
+          </Card>
 
-        <Card css={ref2Css} ref={this.ref2}>
-          World
-        </Card>
+          <Card css={ref2Css} ref={this.ref2}>
+            World
+          </Card>
+        </div>
       </div>
     );
   }
@@ -131,18 +126,61 @@ export default class DataFlowCanvas extends React.Component<DataFlowCanvasProper
   //#endregion
 
   //#region Helpers
-  protected setZoomLevel(): void {
-    // if (this.canvasRef.current) {
-    //   this.canvasRef.current.style.transform = `scale(${this.props.zoomLevel})`;
-    // }
+  protected configureJsPlumbCanvas(): void {
+    if (!this.jsPlumbCanvas) {
+      this.jsPlumbCanvas = newInstance({
+        container: this.canvasRef.current as Element,
+        dragOptions: {
+          cursor: 'pointer',
+          zIndex: 2000,
+        },
+      });
+    }
+  }
 
+  protected configurePanzoom(): void {
+    if (!this.panZoomCanvas) {
+      this.panZoomCanvas = Panzoom(
+        this.canvasRef.current?.parentElement as HTMLElement,
+        {
+          exclude: [this.ref1.current, this.ref2.current],
+          // contain: 'inside',
+        }
+      );
+
+      this.canvasRef.current?.parentElement?.addEventListener(
+        'panzoomzoom',
+        (e: any) => {
+          this.handleZoomChange(e);
+        }
+      );
+
+      this.canvasRef.current?.parentElement?.parentElement?.addEventListener(
+        'wheel',
+        (e) => {
+          if (!e.shiftKey) return;
+
+          this.panZoomCanvas.zoomWithWheel(e);
+        }
+      );
+    }
+  }
+
+  protected handleZoomChange(e: any): void {
+    if (e.detail.scale !== this.props?.zoomLevel) {
+      if (this.props?.onZoomChange) {
+        this.props.onZoomChange(e.detail.scale);
+      }
+    }
+  }
+  protected setZoomLevel(): void {
     this.panZoomCanvas.zoom(this.props.zoomLevel, { animate: true });
 
-    this.panZoomCanvas.pan(10, 10);
+    // this.panZoomCanvas.pan(10, 10);
 
     this.jsPlumbCanvas.setZoom(this.props.zoomLevel);
 
-    console.log(this.props.zoomLevel);
+    // this.canvasRef.current!.style.transform = `scale(${this.props.zoomLevel})`;
   }
   //#endregion
 }
