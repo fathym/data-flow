@@ -4,7 +4,7 @@ import { css } from '@emotion/react';
 import Card from '@mui/material/Card';
 import { BrowserJsPlumbInstance, newInstance } from '@jsplumb/browser-ui';
 import Panzoom, { PanzoomObject } from '@panzoom/panzoom';
-import { useDrop } from 'react-dnd';
+import DataFlowCanvasWrapper from './DataFlowCanvasWrapper';
 
 const canvasCss = css`
   position: absolute;
@@ -111,15 +111,17 @@ export default class DataFlowCanvas extends React.Component<DataFlowCanvasProper
   public render() {
     return (
       <div css={canvasCss}>
-        <div ref={this.canvasRef}>
-          <Card css={ref1Css} ref={this.ref1}>
-            Hello
-          </Card>
+        <DataFlowCanvasWrapper>
+          <div ref={this.canvasRef}>
+            <Card css={ref1Css} ref={this.ref1}>
+              Hello
+            </Card>
 
-          <Card css={ref2Css} ref={this.ref2}>
-            World
-          </Card>
-        </div>
+            <Card css={ref2Css} ref={this.ref2}>
+              World
+            </Card>
+          </div>
+        </DataFlowCanvasWrapper>
       </div>
     );
   }
@@ -178,12 +180,9 @@ export default class DataFlowCanvas extends React.Component<DataFlowCanvasProper
   }
   protected setZoomLevel(): void {
     // this.panZoomCanvas.zoom(this.props.zoomLevel, { animate: true });
-
     // this.panZoomCanvas.pan(10, 10);
-
-    // this.jsPlumbCanvas.setZoom(this.props.zoomLevel);
-
-    // this.canvasRef.current!.style.transform = `scale(${this.props.zoomLevel})`;
+    this.jsPlumbCanvas.setZoom(this.props.zoomLevel);
+    this.canvasRef.current!.style.transform = `scale(${this.props.zoomLevel})`;
   }
   //#endregion
 }

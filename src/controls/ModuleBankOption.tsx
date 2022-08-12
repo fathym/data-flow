@@ -2,14 +2,17 @@
 import React from 'react';
 import { css } from '@emotion/react';
 import { useDrag } from 'react-dnd';
-import { DnDItemTypes } from '../DataFlowContainer';
+import PropTypes from 'prop-types';
+import { DnDItemTypes } from '../models/DnDItemTypes';
 
 const moduleBankOptionCss = css`
-  width: 50px;
-  height: 50px;
+  width: 100px;
+  height: 100px;
+  margin: 1em;
+  overflow: hidden;
 `;
 
-function ModuleBankOption() {
+function ModuleBankOption(props: any) {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: DnDItemTypes.MODULE,
     collect: (monitor) => ({
@@ -17,7 +20,15 @@ function ModuleBankOption() {
     }),
   }));
 
-  return <div css={moduleBankOptionCss} ref={drag}>an option {isDragging}</div>;
+  return (
+    <div css={moduleBankOptionCss} ref={drag}>
+      {props.children}
+    </div>
+  );
 }
+
+ModuleBankOption.propTypes = {
+  children: PropTypes.element.isRequired,
+};
 
 export default ModuleBankOption;

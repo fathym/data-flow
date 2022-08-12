@@ -36,13 +36,14 @@
     />
 
     <style>
-      body, html {
+      body,
+      html {
         width: 100%;
         height: 100%;
         padding: 0;
         margin: 0;
       }
-      
+
       fathym-data-flow {
         display: block;
         width: 100%;
@@ -53,6 +54,37 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
 
-    <fathym-data-flow></fathym-data-flow>
+    <fathym-data-flow id="data-flow"></fathym-data-flow>
+
+    <script>
+      const dataFlow = document.getElementById('data-flow');
+
+      dataFlow.moduleOptions = [
+        {
+          Color: '#ffffff',
+          FillColor: '#4a918e',
+          Shape: 'Circle',
+          Text: 'State Entity',
+        },
+        {
+          Color: '#ffffff',
+          FillColor: '#4a918e',
+          Shape: 'Ellipse',
+          Text: 'State Action',
+        },
+        {
+          Color: '#ffffff',
+          FillColor: '#4a918e',
+          Shape: 'Square',
+          Text: 'API Request',
+        },
+        {
+          Color: '#ffffff',
+          FillColor: '#4a918e',
+          Shape: 'Diamond',
+          Text: 'Control Flow',
+        },
+      ];
+    </script>
   </body>
 </html>

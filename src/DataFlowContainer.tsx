@@ -2,6 +2,7 @@
 import React from 'react';
 import { css } from '@emotion/react';
 import { TouchBackend, TouchBackendOptions } from 'react-dnd-touch-backend';
+import { HTML5Backend, HTML5BackendOptions } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import ControlCommands from './controls/ControlCommands';
 import ModuleCommands from './controls/ModuleCommands';
@@ -10,6 +11,7 @@ import DataFlowCommands from './controls/DataFlowCommands';
 import DataFlowCanvas from './controls/DataFlowCanvas';
 import ModuleBank from './controls/ModuleBank';
 import OutsideAlerter from './utils/OutsideAlerter';
+import { ModuleOptionModel } from './models/ModuleOptionModel';
 
 const backgroundGridBorder = '#cad9d4';
 
@@ -31,26 +33,28 @@ const containerCss = css`
 `;
 
 class DataFlowContainerProperties {
+  public moduleOptions?: Array<ModuleOptionModel>;
+
   public zoomLevel?: number;
 
   constructor() {
+    this.moduleOptions = [];
+
     this.zoomLevel = 1.0;
   }
 }
 
 class DataFlowContainerState {
+  public ModuleOptions?: Array<ModuleOptionModel>;
+
   public OpenSubControls?: 'ModuleBank' | 'Templates';
 
-  public zoomLevel: number;
+  public ZoomLevel: number;
 
   constructor() {
-    this.zoomLevel = 1.0;
+    this.ZoomLevel = 1.0;
   }
 }
-
-export const DnDItemTypes = {
-  MODULE: 'module',
-};
 
 export default class DataFlowContainer extends React.Component<
   DataFlowContainerProperties,
@@ -61,7 +65,7 @@ export default class DataFlowContainer extends React.Component<
   //#endregion
 
   //#region Fields
-  protected dndOptions?: TouchBackendOptions;
+  protected dndOptions?: HTML5BackendOptions;
   //#endregion
 
   //#region Properties
@@ -74,7 +78,8 @@ export default class DataFlowContainer extends React.Component<
     // this.dndOptions = {} as TouchBackendOptions;
 
     this.state = {
-      zoomLevel: props.zoomLevel || this.defaultZoomLevel,
+      ModuleOptions: props.moduleOptions || [],
+      ZoomLevel: props.zoomLevel || this.defaultZoomLevel,
     };
   }
   //#endregion
@@ -88,10 +93,10 @@ export default class DataFlowContainer extends React.Component<
 
   public render() {
     return (
-      <DndProvider backend={TouchBackend} options={this.dndOptions}>
+      <DndProvider backend={HTML5Backend} options={this.dndOptions}>
         <div css={containerCss}>
           <CanvasCommands
-            zoomLevel={this.state.zoomLevel}
+            zoomLevel={this.state.ZoomLevel}
             onZoomChange={(zl) => this.handleZoomChange(zl)}
           />
 
@@ -104,13 +109,13 @@ export default class DataFlowContainer extends React.Component<
           <ModuleCommands />
 
           <DataFlowCanvas
-            zoomLevel={this.state.zoomLevel}
+            zoomLevel={this.state.ZoomLevel}
             onZoomChange={(zl) => this.handleZoomChange(zl)}
           />
 
           {this.state.OpenSubControls === 'ModuleBank' ? (
             <OutsideAlerter onOutsideClick={() => this.SetOpenSubControls()}>
-              <ModuleBank />
+              <ModuleBank options={this.state.ModuleOptions} />
             </OutsideAlerter>
           ) : (
             ''
@@ -143,7 +148,7 @@ export default class DataFlowContainer extends React.Component<
     }
 
     this.setState({
-      zoomLevel: nextZoom,
+      ZoomLevel: nextZoom,
     });
 
     console.log(nextZoom);
