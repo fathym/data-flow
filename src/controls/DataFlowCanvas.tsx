@@ -4,6 +4,7 @@ import { css } from '@emotion/react';
 import Card from '@mui/material/Card';
 import { BrowserJsPlumbInstance, newInstance } from '@jsplumb/browser-ui';
 import Panzoom, { PanzoomObject } from '@panzoom/panzoom';
+import { useDrop } from 'react-dnd';
 
 const canvasCss = css`
   position: absolute;
@@ -38,7 +39,7 @@ class DataFlowCanvasProperties {
   public zoomLevel: number;
 
   constructor() {
-    this.zoomLevel = 0.5;
+    this.zoomLevel = 1.0;
   }
 }
 
@@ -75,30 +76,32 @@ export default class DataFlowCanvas extends React.Component<DataFlowCanvasProper
 
     // this.configurePanzoom();
 
-    // this.setZoomLevel();
+    this.setZoomLevel();
 
     const ep1 = this.jsPlumbCanvas.addEndpoint(this.ref1.current as Element, {
+      source: true,
       endpoint: 'Dot',
-      anchor: 'AutoDefault',
+      anchor: 'Right',
     });
 
     const ep2 = this.jsPlumbCanvas.addEndpoint(this.ref2.current as Element, {
+      target: true,
       endpoint: 'Rectangle',
-      anchor: 'AutoDefault',
+      anchor: 'Left',
     });
 
-    // this.jsPlumbCanvas.connect({
-    //   source: ep1,
-    //   target: ep2,
-    //   connector: 'Straight',
-    //   // connector: {
-    //   //   type: 'Bezier',
-    //   //   options: {},
-    //   //   // overlays: [
-    //   //   //   { type: 'Label', options: { label: 'Connection 1', location: 0.5 } },
-    //   //   // ],
-    //   // },
-    // });
+    this.jsPlumbCanvas.connect({
+      source: ep1,
+      target: ep2,
+      connector: 'Straight',
+      // connector: {
+      //   type: 'Bezier',
+      //   options: {},
+      //   // overlays: [
+      //   //   { type: 'Label', options: { label: 'Connection 1', location: 0.5 } },
+      //   // ],
+      // },
+    });
   }
 
   public componentDidUpdate() {
@@ -174,11 +177,11 @@ export default class DataFlowCanvas extends React.Component<DataFlowCanvasProper
     }
   }
   protected setZoomLevel(): void {
-    this.panZoomCanvas.zoom(this.props.zoomLevel, { animate: true });
+    // this.panZoomCanvas.zoom(this.props.zoomLevel, { animate: true });
 
     // this.panZoomCanvas.pan(10, 10);
 
-    this.jsPlumbCanvas.setZoom(this.props.zoomLevel);
+    // this.jsPlumbCanvas.setZoom(this.props.zoomLevel);
 
     // this.canvasRef.current!.style.transform = `scale(${this.props.zoomLevel})`;
   }

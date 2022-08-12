@@ -4,7 +4,6 @@ import { css } from '@emotion/react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import Card from '@mui/material/Card';
-import Input from '@mui/material/Button';
 import Add from '@mui/icons-material/Add';
 import Remove from '@mui/icons-material/Remove';
 
@@ -22,7 +21,7 @@ class CanvasCommandsProperties {
   public zoomLevel: number;
 
   constructor() {
-    this.zoomLevel = 0.5;
+    this.zoomLevel = 1.0;
   }
 }
 

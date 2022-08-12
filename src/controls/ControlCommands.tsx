@@ -2,16 +2,11 @@
 import React from 'react';
 import { css } from '@emotion/react';
 import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import Card from '@mui/material/Card';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import AccountTree from '@mui/icons-material/AccountTree';
 import DashboardCustomize from '@mui/icons-material/DashboardCustomize';
 import Mouse from '@mui/icons-material/Mouse';
+import PanTool from '@mui/icons-material/PanTool';
 
 const controlCommandsCss = css`
   position: absolute;
@@ -23,32 +18,111 @@ const controlCommandsCss = css`
   z-index: 300;
 `;
 
-const noMaxCss = css`
-  max-width: auto;
-`;
+class ControlCommandsProperties {
+  public onModuleBankClick?: () => void;
 
-function ControlCommands() {
-  return (
-    <Card css={controlCommandsCss}>
-      <div>
-        <Button>
-          <Mouse />
-        </Button>
-      </div>
+  public onPointerToggled?: (oldPointer: string, newPointer: string) => void;
 
-      <div>
-        <Button>
-          <AccountTree />
-        </Button>
-      </div>
-
-      <div>
-        <Button>
-          <DashboardCustomize />
-        </Button>
-      </div>
-    </Card>
-  );
+  public onTemplatesClick?: () => void;
 }
 
-export default ControlCommands;
+class ControlCommandsState {
+  public CurrentPointer!: string;
+}
+
+export default class ControlCommands extends React.Component<
+  ControlCommandsProperties,
+  ControlCommandsState
+> {
+  //#region Fields
+  protected pointers: Array<string>;
+  //#endregion
+
+  //#region Properties
+  //#endregion
+
+  //#region Constructors
+  constructor(props: ControlCommandsProperties) {
+    super(props);
+
+    this.pointers = ['select', 'pan'];
+
+    this.state = {
+      CurrentPointer: this.pointers[0],
+    };
+  }
+  //#endregion
+
+  //#region Life Cycle
+  public componentDidMount() {}
+
+  public render() {
+    return (
+      <Card css={controlCommandsCss}>
+        <div>
+          <Button onClick={() => this.togglePointer()}>
+            {this.state.CurrentPointer === 'select' && (<Mouse />)}
+            
+            {this.state.CurrentPointer === 'pan' && (<PanTool />)}
+          </Button>
+        </div>
+
+        <div>
+          <Button onClick={() => this.moduleBankClicked()}>
+            <AccountTree />
+          </Button>
+        </div>
+
+        <div>
+          <Button onClick={() => this.templatesClicked()}>
+            <DashboardCustomize />
+          </Button>
+        </div>
+      </Card>
+    );
+  }
+  //#endregion
+
+  //#region API Methods
+  //#endregion
+
+  //#region Helpers
+  protected findNextPointer(): string {
+    const curIndex = this.pointers.indexOf(this.state.CurrentPointer);
+
+    let nextIndex = curIndex + 1;
+
+    if (nextIndex >= this.pointers.length) {
+      nextIndex = 0;
+    }
+
+    return this.pointers[nextIndex];
+  }
+
+  protected moduleBankClicked(): void {
+    if (this.props?.onModuleBankClick) {
+      this.props.onModuleBankClick();
+    }
+  }
+
+  protected templatesClicked(): void {
+    if (this.props?.onTemplatesClick) {
+      this.props.onTemplatesClick();
+    }
+  }
+
+  protected togglePointer(): void {
+    const oldPointer = this.state.CurrentPointer;
+
+    const newPointer = this.findNextPointer();
+
+    this.setState({
+      CurrentPointer: newPointer,
+    });
+
+    if (this.props?.onPointerToggled) {
+      this.props.onPointerToggled(oldPointer, newPointer);
+    }
+  }
+  //#endregion
+}

@@ -7,7 +7,7 @@ import Card from '@mui/material/Card';
 import BugReport from '@mui/icons-material/BugReport';
 import RocketLaunch from '@mui/icons-material/RocketLaunch';
 
-const commandBarCss = css`
+const moduleCommandsCss = css`
   position: absolute;
   bottom: 2em;
   left: 2em;
@@ -17,7 +17,7 @@ const commandBarCss = css`
 
 function ModuleCommands() {
   return (
-    <Card css={commandBarCss}>
+    <Card css={moduleCommandsCss}>
       <ButtonGroup variant="outlined" aria-label="outlined button group">
         <Button>
           <BugReport />
